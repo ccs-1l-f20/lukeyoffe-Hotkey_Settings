@@ -1,23 +1,27 @@
 import java.util.ArrayList;
 
-public class hotkey {
-	ArrayList<String> keys;
-	String action;
-	String actionArgument;
-	String actionScope;
+public class Hotkey {
+	private ArrayList<String> keys;
+	private String action;
+	private String actionArgument;
+	private String actionScope;
 	
-	public hotkey() {
+	public Hotkey() {
 		this.keys = new ArrayList<String>();
-		this.action = "";
-		this.actionArgument = "";
-		this.actionScope = "";
+		this.action = "Not specified";
+		this.actionArgument = "Not specified";
+		this.actionScope = "Not specified";
 	}
 	
-	public hotkey(ArrayList<String> keys, String action, String actionArgument, String actionScope) {
+	public Hotkey(ArrayList<String> keys, String action, String actionArgument, String actionScope) {
 		this.keys = keys;
 		this.action = action;
 		this.actionArgument = actionArgument;
 		this.actionScope = actionScope;
+	}
+	
+	public Hotkey(String ahkCode) {
+		
 	}
 	
 	public ArrayList<String> getKeys(){
@@ -50,5 +54,9 @@ public class hotkey {
 	
 	public void setActionScope(String actionScope) {
 		this.actionScope = actionScope;
+	}
+	
+	public String toAhk() { //probably the most important method of the application
+		return "";
 	}
 }

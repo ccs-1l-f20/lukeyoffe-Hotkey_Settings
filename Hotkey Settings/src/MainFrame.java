@@ -20,9 +20,10 @@ import java.io.IOException;
 
 public class MainFrame extends JFrame{
 	
-	private JLayeredPane layeredPane  = new JLayeredPane();
-	private LeftPanel leftPanel = new LeftPanel();
+	
 	private MainLayeredPane MLP = new MainLayeredPane();
+	private LeftPanel leftPanel = new LeftPanel(MLP);
+	private experimentalTabbedPane ETP = new experimentalTabbedPane();
 
 	//private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int frameWidth = 1000; //(int) (screenSize.getWidth()/3);
@@ -32,15 +33,15 @@ public class MainFrame extends JFrame{
 	public MainFrame() {
 		
 		//JFrame setup
-		add(layeredPane, BorderLayout.CENTER);
-		add(leftPanel, BorderLayout.WEST);
+		//add(layeredPane, BorderLayout.CENTER);
+		//add(leftPanel, BorderLayout.WEST);
 		setSize(frameWidth, frameHeight);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Custom Hotkeys");
 		//pack(); //compresses the frame to be only just large enough to fit everything
 		setVisible(true);
-		//setBackground(Color.cyan); //doesn't do anything, look into this
-		add(MLP);
+		//add(MLP);
+		add(ETP);
 		
 
 

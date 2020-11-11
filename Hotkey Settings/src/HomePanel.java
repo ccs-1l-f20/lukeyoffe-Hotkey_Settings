@@ -10,7 +10,7 @@ public class HomePanel extends JPanel{
 		setBorder(BorderFactory.createEmptyBorder(20, 20, 50, 50));
 		
 		add(welcomeMessage);
-		welcomeMessage.setText("<html>Welcome to Custom Hotkeys v. 0.0!<br/>To get started, click the View/Edit button on the left.");
+		welcomeMessage.setText("<html>Welcome to Custom Hotkeys v. 0.0!<br/>To get started, click the View/Edit tab above.");		
 	}
 	
 	public void setVisible(Boolean b) {
