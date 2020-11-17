@@ -1,12 +1,15 @@
 import javax.swing.JTabbedPane;
 
-public class experimentalTabbedPane  extends JTabbedPane{
+public class mainTabbedPane  extends JTabbedPane{
 	private HomePanel homePanel = new HomePanel();
 	private ViewEditPanel VEPanel = new ViewEditPanel();
 	
-	public experimentalTabbedPane() {
+	public mainTabbedPane() {
 		addTab("Home", homePanel);
 		addTab("View/Edit Hotkeys", VEPanel);
+	}
+	public ViewEditPanel getVEPanel() {
+		return VEPanel;
 	}
 
 }

@@ -2,7 +2,9 @@
 public class Main {
 
 	public static void main(String[] args) {
-		new MainFrame();
+		MainFrame GUI = new MainFrame();
+		GUI.getMTP().getVEPanel().showSaved();
+		
 
 	}
 

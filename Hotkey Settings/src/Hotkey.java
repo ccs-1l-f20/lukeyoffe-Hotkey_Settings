@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Hotkey {
 	private ArrayList<String> keys;
@@ -21,6 +22,32 @@ public class Hotkey {
 	}
 	
 	public Hotkey(String ahkCode) {
+		int i = 1;
+		while(!(ahkCode.substring(i - 1, i).equals("&"))) {
+			i++;
+		}
+		ArrayList<String> keys = new ArrayList<String>(Arrays.asList(ahkCode.substring(2, i - 2).split(",")));
+//		for(String key : keys)
+//			key.trim();
+		this.keys = keys;
+		int begin = i;
+		i += 2;
+		while(!(ahkCode.substring(i - 1, i).equals("&"))) {
+			i++;
+		}
+		this.action = ahkCode.substring(begin, i - 1);
+		begin = i;
+		i += 2;
+		while(!(ahkCode.substring(i - 1, i).equals("&"))) {
+			i++;
+		}
+		this.actionArgument = ahkCode.substring(begin, i - 1);
+		begin = i;
+		i += 2;
+		while(!(ahkCode.substring(i - 1, i).equals("&"))) {
+			i++;
+		}
+		this.actionScope = ahkCode.substring(begin, i - 1);
 		
 	}
 	
@@ -56,7 +83,52 @@ public class Hotkey {
 		this.actionScope = actionScope;
 	}
 	
-	public String toAhk() { //probably the most important method of the application
-		return "";
+	public ArrayList<String> toAhk() {
+		ArrayList<String> code = new ArrayList<String>();
+		String line1 = "";
+		String line2 = "";
+		String modifiers = "";
+		String otherKeys = "";
+		for(String key : keys) {
+			switch(key) {
+			case "ctrl":
+				modifiers += "^";
+				break;
+			case "alt":
+				modifiers += "!";
+				break;
+			case "shift":
+				modifiers += "+";
+				break;
+			default:
+				otherKeys += key;
+			}
+		}
+		switch(action) {
+		case "Hotstring":
+			line1 = "::" + otherKeys + "::";
+			line2 = "Send " + actionArgument;
+			
+			break;
+//		case "Send keys to another application":
+//			line1 += modifiers;
+//			break;
+		case "Open an application/website/file":
+			line1 = modifiers + otherKeys + "::";
+			line2 = "Run " + actionArgument;
+			break;
+		}
+		code.add(line1);
+		code.add(line2);
+		return code;
+	}
+	public String toString() {
+		String AL = "[";
+		for(int i = 0; i < keys.size(); i++) {
+			AL += keys.get(i) + ",";
+		}
+		AL = AL.substring(0, AL.length() - 1);
+		AL += "]";
+		return AL + "&" + action + "&" + actionArgument + "&"+ actionScope + "&";
 	}
 }

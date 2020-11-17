@@ -20,14 +20,11 @@ import java.io.IOException;
 
 public class MainFrame extends JFrame{
 	
-	
-	private MainLayeredPane MLP = new MainLayeredPane();
-	private LeftPanel leftPanel = new LeftPanel(MLP);
-	private experimentalTabbedPane ETP = new experimentalTabbedPane();
+	private mainTabbedPane MTP = new mainTabbedPane();
 
 	//private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	private int frameWidth = 1000; //(int) (screenSize.getWidth()/3);
-	private int frameHeight = 500; //(int) (screenSize.getWidth()/3);
+	private int frameWidth = 1100; //(int) (screenSize.getWidth()/3);
+	private int frameHeight = 600; //(int) (screenSize.getWidth()/3);
 	
 	
 	public MainFrame() {
@@ -38,12 +35,16 @@ public class MainFrame extends JFrame{
 		setSize(frameWidth, frameHeight);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Custom Hotkeys");
+		setLocationRelativeTo(null);
 		//pack(); //compresses the frame to be only just large enough to fit everything
 		setVisible(true);
 		//add(MLP);
-		add(ETP);
+		add(MTP);
 		
 
 
+	}
+	public mainTabbedPane getMTP() {
+		return MTP;
 	}
 }
