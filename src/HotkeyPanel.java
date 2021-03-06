@@ -1,7 +1,5 @@
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,14 +12,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
 public class HotkeyPanel extends JPanel implements ActionListener {
@@ -42,15 +37,14 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 	private JPanel buttonPanel = new JPanel();
 	private JPanel editButtonPanel = new JPanel();
 	private JPanel deleteButtonPanel = new JPanel();
-	
+	private ViewEditPanel vep;
 	private JPanel labelPanel = new JPanel();
-	private String[] actions = {"Hotstring", /*"Send keys to another application",*/ "Open an application/website/file"};//spam a key every so often for x seconds
-	private JComboBox<String[]> actionList = new JComboBox(actions);												 //add current highlighted text to be an arg
+	private String[] actions = {"Hotstring", /*"Send keys to another application",*/ "Open an application/website/file"}; // Other ideas: spam a key every so often for x seconds
+	private JComboBox<String[]> actionList = new JComboBox(actions);												 	  //add current highlighted text to be an arg
 	
 	public HotkeyPanel(Hotkey hk, ViewEditPanel vep) {
+		this.vep = vep;
 		this.hk = hk;
-		//this.vep = vep;
-//		setBorder(BorderFactory.createLineBorder(Color.black));
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		setBackground(Color.WHITE);
 		setPreferredSize(new Dimension(500, 100));
@@ -67,17 +61,10 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 		labelPanel.add(keyInfo);
 		labelPanel.add(actionInfo);
 		labelPanel.add(argumentInfo);
-//		labelPanel.add(scopeInfo);
 		keyInfo.setText("Keys: " + hk.getKeys().toString());
 		actionInfo.setText("Action: " + hk.getAction());
 		argumentInfo.setText("Argument: " + hk.getActionArgument());
-//		scopeInfo.setText("Scope: " + hk.getActionScope());
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-//		buttonPanel.add(editKeys);
-//		buttonPanel.add(editAction);
-//		buttonPanel.add(editArg);
-//		buttonPanel.add(editScope);
-//		buttonPanel.add(deleteButton);
 		labelPanel.setBackground(Color.white);
 		buttonPanel.setBackground(Color.white);
 		for(JButton b : editButtons) {
@@ -92,7 +79,6 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 		editKeys.setText("Edit keys");
 		editAction.setText("Edit action");
 		editArg.setText("Edit argument");
-//		editScope.setText("Edit scope");
 		deleteButton.setText("Delete");
 		deleteButton.setBackground(Color.red);
 		saveButton.setText("Save changes");
@@ -100,9 +86,6 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 		saveButton.addActionListener(this);
 		deleteButton.addActionListener(vep);
 		deleteButton.addActionListener(this);
-//		editButton.addActionListener(vep);
-//		editButton.addActionListener(this);
-//		actionList.addActionListener(this);
 		
 	}
 	
@@ -124,7 +107,6 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(null, actionList, "Action", JOptionPane.QUESTION_MESSAGE);
 			actionInfo.setText("Action: " + actionList.getSelectedItem().toString());
 			hk.setAction(actionList.getSelectedItem().toString());
-//			hkInfo.setText(actionList.showPopup());
 		}
 		else if(e.getSource() == editKeys) {
 			new EditKeysFrame(this);
@@ -136,24 +118,23 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource() == deleteButton) {
 			deleted = true;
-			ArrayList<String> lines = new ArrayList<String>();
+		    ArrayList<String> lines = new ArrayList<String>();
 		    String line = null;
 	        try {
 	            File f1 = new File(System.getProperty("user.dir") + "/file.ahk");
-	            FileReader fr = new FileReader(f1);
-	            BufferedReader br = new BufferedReader(fr);
-	            while ((line = br.readLine()) != null) {
-	            	if(!(line.equals(";" + hk))) {
-	            		lines.add(line);
-	            	}
-	            	else {
-	            		br.readLine();
-	            		br.readLine();
-	            		br.readLine();
-	            	}
+	            lines.add("#NoEnv\r\n" + 
+	            		"#SingleInstance force\r\n" +
+	            		"SendMode Input\r\n" + 
+	            		"SetWorkingDir %A_ScriptDir%");
+	            for(int h = 0; h < vep.HKPAL.size(); h++) {
+	            	Hotkey chk = vep.HKPAL.get(h).getHotkey();
+	            	for (int i = 0; i < chk.toAhk().size(); i++){
+	            		if(chk != hk) {
+			            	lines.add(chk.toAhk().get(i));
+	            		}
+
+		            }
 	            }
-	            fr.close();
-	            br.close();
 	            FileWriter fw = new FileWriter(f1);
 	            BufferedWriter out = new BufferedWriter(fw);
 	            for(String s : lines) {
@@ -162,7 +143,6 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 	            }
 	            out.flush();
 	            out.close();
-
 	        } 
 	        catch (Exception ex) {
 	            ex.printStackTrace();
@@ -186,18 +166,25 @@ public class HotkeyPanel extends JPanel implements ActionListener {
 		    String line = null;
 	        try {
 	            File f1 = new File(System.getProperty("user.dir") + "/file.ahk");
-	            FileReader fr = new FileReader(f1);
-	            BufferedReader br = new BufferedReader(fr);
-	            while ((line = br.readLine()) != null) {
-	                lines.add(line);
+//	            FileReader fr = new FileReader(f1);
+//	            BufferedReader br = new BufferedReader(fr);
+//	            while ((line = br.readLine()) != null) {
+//	                lines.add(line);
+//	            }
+//	            lines.add(";" + hk);
+	            lines.add("#NoEnv\r\n" + 
+	            		"#SingleInstance force\r\n" +
+	            		"SendMode Input\r\n" + 
+	            		"SetWorkingDir %A_ScriptDir%");
+	            for(int h = 0; h < vep.HKPAL.size(); h++) {
+	            	Hotkey chk = vep.HKPAL.get(h).getHotkey();
+	            	for (int i = 0; i < chk.toAhk().size(); i++){
+		            	lines.add(chk.toAhk().get(i));
+		            }
 	            }
-	            lines.add(";" + hk);
-	            for (int i = 0; i < hk.toAhk().size(); i++){
-	            	lines.add(hk.toAhk().get(i));
-	            }
-	            lines.add("return");
-	            fr.close();
-	            br.close();
+	            
+//	            fr.close();
+//	            br.close();
 
 	            FileWriter fw = new FileWriter(f1);
 	            BufferedWriter out = new BufferedWriter(fw);

@@ -4,21 +4,24 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+
 
 public class ViewEditPanel extends JPanel implements ActionListener{
 	private JLabel viewEditMessage = new JLabel();
@@ -51,24 +54,44 @@ public class ViewEditPanel extends JPanel implements ActionListener{
 		jp.add(h);
 	}
 	
-	public void showSaved() {
-	    ArrayList<String> lines = new ArrayList<String>();
-	    String line = null;
-        try {
-            File f1 = new File(System.getProperty("user.dir") + "/file.ahk");
-            FileReader fr = new FileReader(f1);
-            BufferedReader br = new BufferedReader(fr);
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            fr.close();
-            br.close();
-        } 
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        for(int i = 5; i < lines.size(); i+= 4) {
-        	HKPAL.add(new HotkeyPanel(new Hotkey(lines.get(i)), this));
+	public void showSaved() throws IOException {
+//	    ArrayList<String> lines = new ArrayList<String>();
+//	    String line = null;
+//        try {
+//            File f1 = new File(System.getProperty("user.dir") + "/file.ahk");
+//            FileReader fr = new FileReader(f1);
+//            BufferedReader br = new BufferedReader(fr);
+//            while ((line = br.readLine()) != null) {
+//                lines.add(line);
+//            }
+//            fr.close();
+//            br.close();
+//        } 
+//        catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+		String inputFile = System.getProperty("user.dir") + "/file.ahk";
+        InputStream is = System.in;
+        if(inputFile != null)
+        	is = new FileInputStream(inputFile);
+        CharStream input = CharStreams.fromStream(is);
+//        CharStream input = null;
+//		try {
+//			input = CharStreams.fromFileName("file.ahk");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+        ly0ahkLexer lexer = new ly0ahkLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ly0ahkParser parser = new ly0ahkParser(tokens);
+        ParseTree tree = parser.script();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        myListener listener = new myListener();
+        walker.walk(listener, tree);
+//        System.out.println("----------------------");
+//        System.out.println(listener.getAllInfo());
+        for(int i = 0; i < listener.getAllInfo().size(); i++) {
+        	HKPAL.add(new HotkeyPanel(new Hotkey(listener.getAllInfo().get(i)), this));
         	jp.add(HKPAL.get(HKPAL.size() - 1));
 			HKPAL.get(HKPAL.size() - 1).setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
         	jp.revalidate();
@@ -85,11 +108,16 @@ public class ViewEditPanel extends JPanel implements ActionListener{
 			jp.revalidate();
 //			jp.repaint();
 		}
-		for(HotkeyPanel h : HKPAL) {
-			if(h.deletedState()) {
-				jp.remove(h);
+		int i = 0;
+		while(i < HKPAL.size()){
+			if(HKPAL.get(i).deletedState()) {
+				jp.remove(HKPAL.get(i));
 				jp.revalidate();
 				jp.repaint();
+				HKPAL.remove(i);
+			}
+			else{
+				i++;
 			}
 		}
 	}

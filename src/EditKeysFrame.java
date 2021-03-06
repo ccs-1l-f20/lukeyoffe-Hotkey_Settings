@@ -96,7 +96,19 @@ public class EditKeysFrame extends JFrame implements ActionListener, KeyListener
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		hkp.getHotkey().getKeys().add(KeyEvent.getKeyText(e.getKeyCode()).toLowerCase());
+		if(hkp.getHotkey().getAction().equals("Hotstring")) {
+			if(hkp.getHotkey().getKeys().size() == 0) {
+				hkp.getHotkey().getKeys().add(KeyEvent.getKeyText(e.getKeyCode()).toLowerCase());
+			}
+			else {
+				hkp.getHotkey().getKeys().set(0, hkp.getHotkey().getKeys().get(0) + KeyEvent.getKeyText(e.getKeyCode()).toLowerCase());
+			}
+			
+		}
+		else {
+			hkp.getHotkey().getKeys().add(KeyEvent.getKeyText(e.getKeyCode()).toLowerCase());
+		}
+		
 		hkp.getKeyLabel().setText("Keys: " + hkp.getHotkey().getKeys().toString().toLowerCase());
 		
 	}

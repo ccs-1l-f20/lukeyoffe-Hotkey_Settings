@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 
 public class Hotkey {
 	private ArrayList<String> keys;
@@ -19,6 +20,12 @@ public class Hotkey {
 		this.action = action;
 		this.actionArgument = actionArgument;
 		this.actionScope = actionScope;
+	}
+	public Hotkey(Hashtable<String, String> info) {
+		String keyString = info.get("keys");
+		this.keys = new ArrayList<String>(Arrays.asList(keyString.split(",")));
+		this.action = info.get("action");
+		this.actionArgument = info.get("actionArgument");
 	}
 	
 	public Hotkey(String ahkCode) {
@@ -120,6 +127,7 @@ public class Hotkey {
 		}
 		code.add(line1);
 		code.add(line2);
+		code.add("return");
 		return code;
 	}
 	public String toString() {
